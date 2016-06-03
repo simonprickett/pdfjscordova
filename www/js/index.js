@@ -37,6 +37,20 @@ var app = {
             }
         );
 
+        document.getElementById('iabOpen').addEventListener(
+            'click',
+            function(e) {
+                app.onIAB();
+            }
+        );
+
+        document.getElementById('fileOpen').addEventListener(
+            'click',
+            function(e) {
+                app.onFileOpen();
+            }
+        );
+
         PDFJS.workerSrc = 'js/pdf.worker.js';
 
         PDFJS.getDocument('./kickstart.pdf').then(function getPdf(pdf) {
@@ -104,6 +118,25 @@ var app = {
 
         app.currentScale -= 0.2;
         app.currentPage.render(renderContext);    
+    },
+
+    onIAB: function() {
+        window.open(cordova.file.applicationDirectory + '/www/kickstart.pdf', '_blank', 'location=no');
+    },
+
+    onFileOpen: function() {
+        cordova.plugins.fileOpener2.open(
+            cordova.file.applicationDirectory + '/www/kickstart.pdf',
+            'application/pdf',
+            {
+                error: function() {
+
+                },
+                success: function() {
+
+                }
+            }
+        );
     }
 };
 
