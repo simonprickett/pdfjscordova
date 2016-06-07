@@ -129,7 +129,7 @@ var app = {
     },
 
     onIAB: function() {
-        window.open(cordova.file.applicationDirectory + '/www/kickstart.pdf', '_blank', 'location=no');
+        window.open(cordova.file.applicationDirectory + '/www/kickstart.pdf', '_blank', 'location=no,enableViewportScale=yes');
     },
 
     onFileOpen: function() {
