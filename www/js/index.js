@@ -83,6 +83,7 @@ var app = {
     onPrevPage: function() {
         if (app.currentPageNumber > 1) {
             app.currentPageNumber -= 1;
+            app.currentScale = 1.0;
             app.openPage();
         }
     },
@@ -90,6 +91,7 @@ var app = {
     onNextPage: function() {
         if (app.currentPageNumber <= app.currentPdf.numPages) {
             app.currentPageNumber += 1;
+            app.currentScale = 1.0;
             app.openPage();
         }
     },
@@ -103,6 +105,9 @@ var app = {
             viewport: viewport
         };
 
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
         app.currentScale += 0.2;
         app.currentPage.render(renderContext);
     },
@@ -115,6 +120,9 @@ var app = {
             canvasContext: context,
             viewport: viewport
         };
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
 
         app.currentScale -= 0.2;
         app.currentPage.render(renderContext);    
