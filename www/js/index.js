@@ -9,6 +9,44 @@ var app = {
     },
 
     onDeviceReady: function() {
+        var xhr;
+
+        if (device.platform === 'Android') {
+            xhr = new XMLHttpRequest();
+            xhr.open('GET', './kickstart.pdf', true);
+            xhr.responseType = 'blob';
+
+            xhr.onload = function() {
+                var blob;
+
+                if (this.status === 200) {
+                    blob = new Blob([this.response], { type: 'application/pdf'});
+
+                    window.resolveLocalFileSystemURL(cordova.file.externalDataDirectory, function(dir) {
+                        dir.getFile('kickstart.pdf', { create: true, exclusive: false }, function(file) {
+                            file.createWriter(function(fileWriter) {
+                                fileWriter.onwriteend = function() {
+                                    console.log('Successful file write: ' + file.toURL());
+                                };
+
+                                fileWriter.onerror = function(e) {
+                                    console.log('Failed file write: ' + e.toString());
+                                };
+
+                                fileWriter.write(blob);
+                            });
+                        });
+                    });
+                } else {
+                    console.log('problem: ' + this.status);
+                }
+            } ;
+
+            xhr.send();   
+        } else {
+            console.log('not android');
+        }
+
         document.getElementById('pdfPrev').addEventListener(
             'click',
             function(e) {
@@ -129,19 +167,22 @@ var app = {
     },
 
     onIAB: function() {
-        window.open(cordova.file.applicationDirectory + '/www/kickstart.pdf', '_blank', 'location=no,enableViewportScale=yes');
+        window.open((device.platform === 'Android' ? cordova.file.externalDataDirectory + 'kickstart.pdf' : cordova.file.applicationDirectory + '/www/kickstart.pdf'), '_blank', 'location=no,enableViewportScale=yes');
     },
 
-    onFileOpen: function() {
+    onFileOpen: function() {       
+        var filePathAndroid = cordova.file.externalDataDirectory + 'kickstart.pdf';
         cordova.plugins.fileOpener2.open(
-            cordova.file.applicationDirectory + '/www/kickstart.pdf',
+            (device.platform === 'Android' ? cordova.file.externalDataDirectory + 'kickstart.pdf' : cordova.file.applicationDirectory + '/www/kickstart.pdf'),
             'application/pdf',
             {
-                error: function() {
-
+                error: function(e) {
+                    console.log('Error opening file:' + e);
+                    console.log('path: ' + filePathAndroid);
                 },
                 success: function() {
-
+                    console.log('File opened successfully');
+                    console.log('path: ' + filePathAndroid);
                 }
             }
         );
