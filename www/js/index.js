@@ -104,6 +104,8 @@ var app = {
             var canvas = document.getElementById('pdfCanvas');
             var context = canvas.getContext('2d');
             var renderContext;
+            var pageRenderer;
+            var renderCompleteCallback;
             
             canvas.height = viewport.height;
             canvas.width = viewport.width;
@@ -113,7 +115,14 @@ var app = {
                 viewport: viewport
             };
 
-            page.render(renderContext);
+            app.updateButtonState(false);
+            pageRenderer = page.render(renderContext);
+            renderCompleteCallback = pageRenderer._internalRenderTask.callback;
+            pageRenderer._internalRenderTask.callback = function(error) {
+                renderCompleteCallback.call(this, error);
+                app.updateButtonState(true);
+            };
+
             app.currentPage = page;
         });
     },
@@ -142,12 +151,21 @@ var app = {
             canvasContext: context,
             viewport: viewport
         };
+        var pageRenderer;
+        var renderCompleteCallback;
 
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
         app.currentScale += 0.2;
-        app.currentPage.render(renderContext);
+
+        app.updateButtonState(false);
+        pageRenderer = app.currentPage.render(renderContext);
+        renderCompleteCallback = pageRenderer._internalRenderTask.callback;
+        pageRenderer._internalRenderTask.callback = function(error) {
+            renderCompleteCallback.call(this, error);
+            app.updateButtonState(true);
+        };
     },
 
     onZoomOut: function() {
@@ -158,12 +176,21 @@ var app = {
             canvasContext: context,
             viewport: viewport
         };
+        var pageRenderer;
+        var renderCompleteCallback;
 
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
         app.currentScale -= 0.2;
-        app.currentPage.render(renderContext);    
+
+        app.updateButtonState(false);
+        pageRenderer = app.currentPage.render(renderContext);
+        renderCompleteCallback = pageRenderer._internalRenderTask.callback;
+        pageRenderer._internalRenderTask.callback = function(error) {
+            renderCompleteCallback.call(this, error);
+            app.updateButtonState(true);
+        };
     },
 
     onIAB: function() {
@@ -186,6 +213,16 @@ var app = {
                 }
             }
         );
+    },
+
+    updateButtonState: function(enableButtons) {
+        var n = 0;
+        var btns = document.getElementsByClassName('btn');
+        var newClassName = (enableButtons ? 'btn' : 'btn unselectable');
+
+        for (; n < btns.length; n++) {
+          btns[n].className = newClassName;  
+        }
     }
 };
 

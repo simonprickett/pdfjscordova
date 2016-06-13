@@ -84,6 +84,17 @@ h1 {
     display:none;
 }
 
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
+}
+
+
 @keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
